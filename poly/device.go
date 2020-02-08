@@ -40,13 +40,12 @@ func (d *Device) PutPixel(x, y int, c Color) {
 
 func (d *Device) DrawMesh(mesh Mesh, c Color) {
 	scale := float64(d.Width) * 0.8 / 2
-	cx, cy := d.Width / 2, d.Height / 2
+	cx, cy := d.Width/2, d.Height/2
 	modelMatrix := RotateX(mesh.Rotation.X).Mul(RotateY(mesh.Rotation.Y)).Mul(RotateZ(mesh.Rotation.Z))
 	for _, v := range mesh.Vertices {
 		v.WorldCoordinates = TransformCoordinate(v.Coordinates, modelMatrix)
-		x := v.WorldCoordinates.X * scale + float64(cx)
-		y := v.WorldCoordinates.Y * scale + float64(cy)
+		x := v.WorldCoordinates.X*scale + float64(cx)
+		y := v.WorldCoordinates.Y*scale + float64(cy)
 		d.PutPixel(int(x), int(y), c)
 	}
 }
-

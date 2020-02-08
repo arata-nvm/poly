@@ -57,7 +57,7 @@ func parseVertex(line string) Vertex {
 		panic(err)
 	}
 
-	return Vertex{Coordinates:NewVector3(x, y, z)}
+	return Vertex{Coordinates: NewVector3(x, y, z)}
 }
 
 func parseFace(line string) Face {
