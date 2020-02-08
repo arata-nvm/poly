@@ -1,7 +1,6 @@
 package poly
 
 import (
-	"fmt"
 	. "github.com/arata-nvm/poly/vecmath"
 	"image"
 )
@@ -35,7 +34,6 @@ func (d *Device) Image() image.Image {
 
 func (d *Device) PutPixel(x, y int, c Color) {
 	d.ColorBuffer.Set(x, y, c.NRGBA())
-	fmt.Printf("draw: (%d, %d)\n", x, y)
 }
 
 func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
