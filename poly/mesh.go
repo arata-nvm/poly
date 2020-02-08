@@ -8,11 +8,13 @@ type Mesh struct {
 
 	Position Vector3
 	Rotation Vector3
+	Scale    Vector3
 }
 
 func NewMesh() Mesh {
 	return Mesh{
 		Position: Zero(),
 		Rotation: Zero(),
+		Scale:    Unit(),
 	}
 }
