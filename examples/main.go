@@ -8,7 +8,9 @@ func main() {
 	d := NewDevice(256, 256)
 	d.ClearColorBuffer(BLACK)
 
-	d.PutPixel(128, 128, WHITE)
+	m := LoadObj("examples/box3.obj")
+
+	d.DrawMesh(m, WHITE)
 
 	Save("out.png", d.Image())
 }
