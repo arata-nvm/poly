@@ -26,6 +26,11 @@ func UnitZ() Vector3 {
 	return Vector3{0, 0, 1}
 }
 
+func TransformCoordinate(v Vector3, transform Matrix4) Vector3 {
+	w := 1 / (transform.M30*v.X + transform.M31*v.Y + transform.M32*v.Z + transform.M33)
+	return transform.MulVector(v).MulScalar(w)
+}
+
 func NewVector3(x, y, z float64) Vector3 {
 	return Vector3{x, y, z}
 }
