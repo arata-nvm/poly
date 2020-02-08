@@ -6,11 +6,13 @@ type Mesh struct {
 	Vertices []Vertex
 	Faces    []Face
 
+	Position Vector3
 	Rotation Vector3
 }
 
 func NewMesh() Mesh {
 	return Mesh{
+		Position: Zero(),
 		Rotation: Zero(),
 	}
 }
