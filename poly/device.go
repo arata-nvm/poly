@@ -38,6 +38,36 @@ func (d *Device) PutPixel(x, y int, c Color) {
 	fmt.Printf("draw: (%d, %d)\n", x, y)
 }
 
+func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
+	x1 := int(v1.X)
+	y1 := int(v1.Y)
+	x2 := int(v2.X)
+	y2 := int(v2.Y)
+
+	dx := abs(x2 - x1)
+	dy := abs(y2 - y1)
+	sx := sign(x2 - x1)
+	sy := sign(y2 - y1)
+	err := dx - dy
+
+	for {
+		d.PutPixel(x1, y1, c)
+
+		if x1 == x2 && y1 == y2 {
+			break
+		}
+		e2 := 2 * err
+		if e2 > -dx {
+			err -= dy
+			x1 += sx
+		}
+		if e2 < dx {
+			err += dx
+			y1 += sy
+		}
+	}
+}
+
 func (d *Device) DrawMesh(mesh Mesh, c Color) {
 	scale := float64(d.Width) / 2
 	cx, cy := d.Width/2, d.Height/2
@@ -45,10 +75,18 @@ func (d *Device) DrawMesh(mesh Mesh, c Color) {
 	rm := RotateX(mesh.Rotation.X).Mul(RotateY(mesh.Rotation.Y)).Mul(RotateZ(mesh.Rotation.Z))
 	sm := Scale(mesh.Scale)
 	modelMatrix := tm.Mul(rm).Mul(sm)
-	for _, v := range mesh.Vertices {
-		v.WorldCoordinates = TransformCoordinate(v.Coordinates, modelMatrix)
-		x := v.WorldCoordinates.X*scale + float64(cx)
-		y := v.WorldCoordinates.Y*scale + float64(cy)
-		d.PutPixel(int(x), int(y), c)
+	for i := range mesh.Vertices {
+		mesh.Vertices[i].WorldCoordinates = TransformCoordinate(mesh.Vertices[i].Coordinates, modelMatrix)
+		mesh.Vertices[i].WorldCoordinates.X = mesh.Vertices[i].WorldCoordinates.X*scale + float64(cx)
+		mesh.Vertices[i].WorldCoordinates.Y = mesh.Vertices[i].WorldCoordinates.Y*scale + float64(cy)
+	}
+
+	for _, f := range mesh.Faces {
+		v1 := mesh.Vertices[f.V1].WorldCoordinates
+		v2 := mesh.Vertices[f.V2].WorldCoordinates
+		v3 := mesh.Vertices[f.V3].WorldCoordinates
+		d.DrawLine(v1, v2, c)
+		d.DrawLine(v2, v3, c)
+		d.DrawLine(v3, v1, c)
 	}
 }
