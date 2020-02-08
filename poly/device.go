@@ -66,15 +66,20 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	}
 }
 
-func (d *Device) DrawMesh(mesh Mesh, c Color) {
-	scale := float64(d.Width) / 2
+func (d *Device) DrawMesh(camera Camera, mesh Mesh, c Color) {
+	viewMatrix := LookAt(camera.Position, camera.Target, camera.Up)
+
 	cx, cy := d.Width/2, d.Height/2
 	tm := Translate(mesh.Position)
 	rm := RotateX(mesh.Rotation.X).Mul(RotateY(mesh.Rotation.Y)).Mul(RotateZ(mesh.Rotation.Z))
 	sm := Scale(mesh.Scale)
 	modelMatrix := tm.Mul(rm).Mul(sm)
+
+	transformMatrix := viewMatrix.Mul(modelMatrix)
+
+	scale := float64(d.Width) / 2
 	for i := range mesh.Vertices {
-		mesh.Vertices[i].WorldCoordinates = TransformCoordinate(mesh.Vertices[i].Coordinates, modelMatrix)
+		mesh.Vertices[i].WorldCoordinates = TransformCoordinate(mesh.Vertices[i].Coordinates, transformMatrix)
 		mesh.Vertices[i].WorldCoordinates.X = mesh.Vertices[i].WorldCoordinates.X*scale + float64(cx)
 		mesh.Vertices[i].WorldCoordinates.Y = mesh.Vertices[i].WorldCoordinates.Y*scale + float64(cy)
 	}
