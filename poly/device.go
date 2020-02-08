@@ -40,8 +40,8 @@ func (d *Device) DrawMesh(mesh Mesh, c Color) {
 	scale := float64(d.Width) * 0.8 / 2
 	cx, cy := d.Width / 2, d.Height / 2
 	for _, v := range mesh.Vertices {
-		x := v.X * scale + float64(cx)
-		y := v.Y * scale + float64(cy)
+		x := v.Coordinates.X * scale + float64(cx)
+		y := v.Coordinates.Y * scale + float64(cy)
 		d.PutPixel(int(x), int(y), c)
 	}
 }

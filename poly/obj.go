@@ -40,7 +40,7 @@ func parseObj(r io.Reader) Mesh {
 	return o
 }
 
-func parseVertex(line string) Vector3 {
+func parseVertex(line string) Vertex {
 	cols := strings.Split(line, " ")
 	x, err := strconv.ParseFloat(cols[1], 32)
 	if err != nil {
@@ -57,7 +57,7 @@ func parseVertex(line string) Vector3 {
 		panic(err)
 	}
 
-	return NewVector3(x, y, z)
+	return Vertex{Coordinates:NewVector3(x, y, z)}
 }
 
 func parseFace(line string) Face {
