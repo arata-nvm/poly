@@ -99,8 +99,49 @@ func (d *Device) DrawMesh(mesh Mesh, c Color) {
 		v1 := mesh.Vertices[f.V1].WorldCoordinates
 		v2 := mesh.Vertices[f.V2].WorldCoordinates
 		v3 := mesh.Vertices[f.V3].WorldCoordinates
-		d.DrawLine(v1, v2, c)
-		d.DrawLine(v2, v3, c)
-		d.DrawLine(v3, v1, c)
+		d.DrawWiredTriangle(v1, v2, v3, c)
 	}
+}
+
+func (d *Device) DrawWiredTriangle(v1, v2, v3 Vector3, c Color) {
+	d.DrawLine(v1, v2, c)
+	d.DrawLine(v2, v3, c)
+	d.DrawLine(v3, v1, c)
+}
+
+// TODO y1 = y2 = y3
+func (d *Device) DrawTriangle(v1, v2, v3 Vector3, c Color) {
+	v1, v2, v3 = sortVectorsWithY(v1, v2, v3)
+	// top
+	for y := int(v1.Y); y < int(v2.Y); y++ {
+		yf := float64(y)
+		x1 := interpolate(v1.X, v3.X, (yf-v1.Y)/(v3.Y-v1.Y))
+		x2 := interpolate(v1.X, v2.X, (yf-v1.Y)/(v2.Y-v1.Y))
+		vd1 := NewVector3(x1, yf, 0)
+		vd2 := NewVector3(x2, yf, 0)
+		d.DrawLine(vd1, vd2, c)
+	}
+
+	// bottom
+	for y := int(v2.Y); y < int(v3.Y); y++ {
+		yf := float64(y)
+		x1 := interpolate(v1.X, v3.X, (yf-v1.Y)/(v3.Y-v1.Y))
+		x2 := interpolate(v2.X, v3.X, (yf-v2.Y)/(v3.Y-v2.Y))
+		vd1 := NewVector3(x1, yf, 0)
+		vd2 := NewVector3(x2, yf, 0)
+		d.DrawLine(vd1, vd2, c)
+	}
+}
+
+func sortVectorsWithY(v1, v2, v3 Vector3) (Vector3, Vector3, Vector3) {
+	if v1.Y > v2.Y {
+		v1, v2 = v2, v1
+	}
+	if v2.Y > v3.Y {
+		v2, v3 = v3, v2
+	}
+	if v1.Y > v2.Y {
+		v1, v2 = v2, v1
+	}
+	return v1, v2, v3
 }
