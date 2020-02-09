@@ -9,31 +9,44 @@ type Device struct {
 	Width  int
 	Height int
 
-	ColorBuffer *image.NRGBA
+	camera      Camera
+	colorBuffer *image.NRGBA
+
+	viewMatrix       Matrix4
+	projectionMatrix Matrix4
 }
 
 func NewDevice(width, height int) *Device {
 	return &Device{
 		Width:       width,
 		Height:      height,
-		ColorBuffer: image.NewNRGBA(image.Rect(0, 0, width, height)),
+		colorBuffer: image.NewNRGBA(image.Rect(0, 0, width, height)),
 	}
 }
 
 func (d *Device) ClearColorBuffer(c Color) {
 	for y := 0; y < d.Height; y++ {
 		for x := 0; x < d.Width; x++ {
-			d.ColorBuffer.SetNRGBA(x, y, c.NRGBA())
+			d.colorBuffer.SetNRGBA(x, y, c.NRGBA())
 		}
 	}
 }
 
 func (d *Device) Image() image.Image {
-	return d.ColorBuffer
+	return d.colorBuffer
+}
+
+func (d *Device) SetCamera(c Camera) {
+	d.camera = c
+	d.viewMatrix = LookAt(c.Position, c.Target, c.Up)
+}
+
+func (d *Device) Perspective(fovy, aspect, near, far float64) {
+	d.projectionMatrix = Perspective(fovy, aspect, near, far)
 }
 
 func (d *Device) PutPixel(x, y int, c Color) {
-	d.ColorBuffer.Set(x, y, c.NRGBA())
+	d.colorBuffer.Set(x, y, c.NRGBA())
 }
 
 func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
@@ -66,18 +79,14 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	}
 }
 
-func (d *Device) DrawMesh(camera Camera, mesh Mesh, c Color) {
-	viewMatrix := LookAt(camera.Position, camera.Target, camera.Up)
-
-	projectionMatrix := Perspective(10, float64(d.Width)/float64(d.Height), 1, 50)
-
+func (d *Device) DrawMesh(mesh Mesh, c Color) {
 	cx, cy := d.Width/2, d.Height/2
 	tm := Translate(mesh.Position)
 	rm := RotateX(mesh.Rotation.X).Mul(RotateY(mesh.Rotation.Y)).Mul(RotateZ(mesh.Rotation.Z))
 	sm := Scale(mesh.Scale)
 	modelMatrix := tm.Mul(rm).Mul(sm)
 
-	transformMatrix := projectionMatrix.Mul(viewMatrix).Mul(modelMatrix)
+	transformMatrix := d.projectionMatrix.Mul(d.viewMatrix).Mul(modelMatrix)
 
 	scale := float64(d.Width) / 2
 	for i := range mesh.Vertices {
