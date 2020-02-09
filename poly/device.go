@@ -49,6 +49,10 @@ func (d *Device) PutPixel(x, y int, z float64,  c Color) {
 	d.colorBuffer.Set(x, y, c.NRGBA())
 }
 
+func (d *Device) DrawPoint(v Vector3, c Color) {
+	d.PutPixel(int(v.X), int(v.Y), v.Y, c)
+}
+
 // TODO v1 > v2
 func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	x1 := int(v1.X)
