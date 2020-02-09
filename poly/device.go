@@ -45,10 +45,11 @@ func (d *Device) Perspective(fovy, aspect, near, far float64) {
 	d.projectionMatrix = Perspective(fovy, aspect, near, far)
 }
 
-func (d *Device) PutPixel(x, y int, c Color) {
+func (d *Device) PutPixel(x, y int, z float64,  c Color) {
 	d.colorBuffer.Set(x, y, c.NRGBA())
 }
 
+// TODO v1 > v2
 func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	x1 := int(v1.X)
 	y1 := int(v1.Y)
@@ -57,12 +58,28 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 
 	dx := abs(x2 - x1)
 	dy := abs(y2 - y1)
-	sx := sign(x2 - x1)
-	sy := sign(y2 - y1)
+	sx := sign(dx)
+	sy := sign(dy)
 	err := dx - dy
 
+	gz := 1.0
+	if dx > dy {
+		gz /= float64(dx)
+	} else {
+		gz /= float64(dy)
+	}
+
 	for {
-		d.PutPixel(x1, y1, c)
+		var g float64
+		if dx > dy {
+			g = gz * float64(x2 - x1)
+		} else {
+			g = gz * float64(y2 - y1)
+		}
+
+		z := interpolate(v1.Z, v2.Z, 1 - g)
+
+		d.PutPixel(x1, y1, z, c)
 
 		if x1 == x2 && y1 == y2 {
 			break
@@ -115,20 +132,32 @@ func (d *Device) DrawTriangle(v1, v2, v3 Vector3, c Color) {
 	// top
 	for y := int(v1.Y); y < int(v2.Y); y++ {
 		yf := float64(y)
-		x1 := interpolate(v1.X, v3.X, (yf-v1.Y)/(v3.Y-v1.Y))
-		x2 := interpolate(v1.X, v2.X, (yf-v1.Y)/(v2.Y-v1.Y))
-		vd1 := NewVector3(x1, yf, 0)
-		vd2 := NewVector3(x2, yf, 0)
+		g1 := (yf-v1.Y)/(v3.Y-v1.Y)
+		x1 := interpolate(v1.X, v3.X, g1)
+		z1 := interpolate(v1.Z, v3.Z, g1)
+
+		g2 := (yf-v1.Y)/(v2.Y-v1.Y)
+		x2 := interpolate(v1.X, v2.X, g2)
+		z2 := interpolate(v1.Z, v2.Z, g2)
+
+		vd1 := NewVector3(x1, yf, z1)
+		vd2 := NewVector3(x2, yf, z2)
 		d.DrawLine(vd1, vd2, c)
 	}
 
 	// bottom
 	for y := int(v2.Y); y < int(v3.Y); y++ {
 		yf := float64(y)
-		x1 := interpolate(v1.X, v3.X, (yf-v1.Y)/(v3.Y-v1.Y))
-		x2 := interpolate(v2.X, v3.X, (yf-v2.Y)/(v3.Y-v2.Y))
-		vd1 := NewVector3(x1, yf, 0)
-		vd2 := NewVector3(x2, yf, 0)
+		g1 := (yf-v1.Y)/(v3.Y-v1.Y)
+		x1 := interpolate(v1.X, v3.X, g1)
+		z1 := interpolate(v1.Z, v3.Z, g1)
+
+		g2 := (yf-v2.Y)/(v3.Y-v2.Y)
+		x2 := interpolate(v2.X, v3.X, g2)
+		z2 := interpolate(v2.Z, v3.Z, g2)
+
+		vd1 := NewVector3(x1, yf, z1)
+		vd2 := NewVector3(x2, yf, z2)
 		d.DrawLine(vd1, vd2, c)
 	}
 }
