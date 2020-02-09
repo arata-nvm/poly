@@ -62,8 +62,8 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 
 	dx := abs(x2 - x1)
 	dy := abs(y2 - y1)
-	sx := sign(dx)
-	sy := sign(dy)
+	sx := sign(x2 - x1)
+	sy := sign(x2 - x1)
 	err := dx - dy
 
 	gz := 1.0
