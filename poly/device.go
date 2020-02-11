@@ -204,6 +204,9 @@ func (d *Device) scanLine(y int, va, vb, vc, vd Vector3, c Color) {
 
 	for x := xs; x <= xe; x++ {
 		g := float64(x-xs) / float64(xe-xs)
+		if math.IsNaN(g) {
+			g = 0
+		}
 		z := interpolate(z1, z2, g)
 
 		d.putPixel(x, y, z, c)
