@@ -26,9 +26,7 @@ func NewDevice(width, height int) *Device {
 		depthBuffer: make([]float64, width*height),
 	}
 
-	for i := range d.depthBuffer {
-		d.depthBuffer[i] = math.MaxFloat64
-	}
+	d.ClearDepthBuffer(math.MaxFloat64)
 
 	return d
 }
