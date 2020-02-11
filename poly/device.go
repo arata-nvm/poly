@@ -3,6 +3,7 @@ package poly
 import (
 	. "github.com/arata-nvm/poly/vecmath"
 	"image"
+	"math"
 )
 
 type Device struct {
@@ -144,7 +145,7 @@ func (d *Device) DrawMesh(mesh *Mesh, c Color) {
 		v1 := mesh.Vertices[f.V1].WorldCoordinates
 		v2 := mesh.Vertices[f.V2].WorldCoordinates
 		v3 := mesh.Vertices[f.V3].WorldCoordinates
-		d.DrawWiredTriangle(v1, v2, v3, c)
+		d.DrawTriangle(v1, v2, v3, c)
 	}
 }
 
@@ -154,39 +155,56 @@ func (d *Device) DrawWiredTriangle(v1, v2, v3 Vector3, c Color) {
 	d.DrawLine(v3, v1, c)
 }
 
-// TODO y1 = y2 = y3
+// TODO fix errors(float -> int)
 func (d *Device) DrawTriangle(v1, v2, v3 Vector3, c Color) {
 	v1, v2, v3 = sortVectorsWithY(v1, v2, v3)
-	// top
-	for y := int(v1.Y); y < int(v2.Y); y++ {
-		yf := float64(y)
-		g1 := (yf-v1.Y)/(v3.Y-v1.Y)
-		x1 := interpolate(v1.X, v3.X, g1)
-		z1 := interpolate(v1.Z, v3.Z, g1)
-
-		g2 := (yf-v1.Y)/(v2.Y-v1.Y)
-		x2 := interpolate(v1.X, v2.X, g2)
-		z2 := interpolate(v1.Z, v2.Z, g2)
-
-		vd1 := NewVector3(x1, yf, z1)
-		vd2 := NewVector3(x2, yf, z2)
-		d.DrawLine(vd1, vd2, c)
+	d12, d13 := 0.0, 0.0
+	if v2.Y-v1.Y > 0 {
+		d12 = (v2.X - v1.X) / (v2.Y - v1.Y)
+	}
+	if v3.Y-v1.Y > 0 {
+		d13 = (v3.X - v1.X) / (v3.Y - v1.Y)
 	}
 
-	// bottom
-	for y := int(v2.Y); y < int(v3.Y); y++ {
-		yf := float64(y)
-		g1 := (yf-v1.Y)/(v3.Y-v1.Y)
-		x1 := interpolate(v1.X, v3.X, g1)
-		z1 := interpolate(v1.Z, v3.Z, g1)
+	if d12 > d13 {
+		for y := int(v1.Y); y <= int(v3.Y); y++ {
+			if float64(y) < v2.Y {
+				d.scanLine(y, v1, v3, v1, v2, c)
+			} else {
+				d.scanLine(y, v1, v3, v2, v3, c)
+			}
+		}
+	} else {
+		for y := int(v1.Y); y <= int(v3.Y); y++ {
+			if float64(y) < v2.Y {
+				d.scanLine(y, v1, v2, v1, v3, c)
+			} else {
+				d.scanLine(y, v2, v3, v1, v3, c)
+			}
+		}
+	}
+}
 
-		g2 := (yf-v2.Y)/(v3.Y-v2.Y)
-		x2 := interpolate(v2.X, v3.X, g2)
-		z2 := interpolate(v2.Z, v3.Z, g2)
+func (d *Device) scanLine(y int, va, vb, vc, vd Vector3, c Color) {
+	g1 := (float64(y) - va.Y) / (vb.Y - va.Y)
+	x1 := int(interpolate(va.X, vb.X, g1))
+	z1 := interpolate(va.Z, vb.Z, g1)
 
-		vd1 := NewVector3(x1, yf, z1)
-		vd2 := NewVector3(x2, yf, z2)
-		d.DrawLine(vd1, vd2, c)
+	g2 := (float64(y) - vc.Y) / (vd.Y - vc.Y)
+	x2 := int(interpolate(vc.X, vd.X, g2))
+	z2 := interpolate(vc.Z, vd.Z, g2)
+
+	if math.IsNaN(g1) || math.IsNaN(g2) {
+		return
+	}
+
+	xs, xe := min(x1, x2), max(x1, x2)
+
+	for x := xs; x <= xe; x++ {
+		g := float64(x-xs) / float64(xe-xs)
+		z := interpolate(z1, z2, g)
+
+		d.putPixel(x, y, z, c)
 	}
 }
 
