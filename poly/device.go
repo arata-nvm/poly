@@ -101,12 +101,12 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	for {
 		var g float64
 		if dx > dy {
-			g = gz * float64(x2 - x1)
+			g = gz * float64(x2-x1)
 		} else {
-			g = gz * float64(y2 - y1)
+			g = gz * float64(y2-y1)
 		}
 
-		z := interpolate(v1.Z, v2.Z, 1 - g)
+		z := interpolate(v1.Z, v2.Z, 1-g)
 
 		d.putPixel(x1, y1, z, c)
 
