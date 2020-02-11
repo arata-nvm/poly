@@ -49,6 +49,10 @@ func (d *Device) Image() image.Image {
 	return d.colorBuffer
 }
 
+func (d *Device) DepthBuffer() []float64 {
+	return d.depthBuffer
+}
+
 func (d *Device) SetCamera(c Camera) {
 	d.camera = c
 	d.viewMatrix = LookAt(c.Position, c.Target, c.Up)
