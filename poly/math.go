@@ -24,6 +24,6 @@ func clamp(value, min, max float64) float64 {
 	return math.Max(min, math.Min(max, value))
 }
 
-func interpolate(min, max, gradient float64) float64 {
-	return min + (max-min)*gradient
+func interpolate(min, max, t float64) float64 {
+	return min + (max-min)*clamp(t, 0, 1)
 }
