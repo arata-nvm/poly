@@ -100,7 +100,7 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	}
 }
 
-func (d *Device) DrawMesh(mesh Mesh, c Color) {
+func (d *Device) DrawMesh(mesh *Mesh, c Color) {
 	cx, cy := d.Width/2, d.Height/2
 	tm := Translate(mesh.Position)
 	rm := RotateX(mesh.Rotation.X).Mul(RotateY(mesh.Rotation.Y)).Mul(RotateZ(mesh.Rotation.Z))

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func LoadObj(filename string) Mesh {
+func LoadObj(filename string) *Mesh {
 	f, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -20,7 +20,7 @@ func LoadObj(filename string) Mesh {
 	return parseObj(f)
 }
 
-func parseObj(r io.Reader) Mesh {
+func parseObj(r io.Reader) *Mesh {
 	o := NewMesh()
 
 	s := bufio.NewScanner(r)

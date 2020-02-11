@@ -11,8 +11,8 @@ type Mesh struct {
 	Scale    Vector3
 }
 
-func NewMesh() Mesh {
-	return Mesh{
+func NewMesh() *Mesh {
+	return &Mesh{
 		Position: Zero(),
 		Rotation: Zero(),
 		Scale:    Unit(),
