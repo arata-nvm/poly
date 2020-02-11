@@ -59,7 +59,7 @@ func (d *Device) Perspective(fovy, aspect, near, far float64) {
 	d.projectionMatrix = Perspective(fovy, aspect, near, far)
 }
 
-func (d *Device) PutPixel(x, y int, z float64,  c Color) {
+func (d *Device) putPixel(x, y int, z float64, c Color) {
 	if x < 0 || y < 0 || x > d.Width || y > d.Height {
 		return
 	}
@@ -74,7 +74,7 @@ func (d *Device) PutPixel(x, y int, z float64,  c Color) {
 }
 
 func (d *Device) DrawPoint(v Vector3, c Color) {
-	d.PutPixel(int(v.X), int(v.Y), v.Y, c)
+	d.putPixel(int(v.X), int(v.Y), v.Y, c)
 }
 
 // TODO v1 > v2
@@ -107,7 +107,7 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 
 		z := interpolate(v1.Z, v2.Z, 1 - g)
 
-		d.PutPixel(x1, y1, z, c)
+		d.putPixel(x1, y1, z, c)
 
 		if x1 == x2 && y1 == y2 {
 			break
