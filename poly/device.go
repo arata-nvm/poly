@@ -60,6 +60,10 @@ func (d *Device) Perspective(fovy, aspect, near, far float64) {
 }
 
 func (d *Device) PutPixel(x, y int, z float64,  c Color) {
+	if x < 0 || y < 0 || x > d.Width || y > d.Height {
+		return
+	}
+
 	index := x + y*d.Width
 	if d.depthBuffer[index] < z {
 		return
