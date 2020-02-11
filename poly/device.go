@@ -63,7 +63,7 @@ func (d *Device) Perspective(fovy, aspect, near, far float64) {
 }
 
 func (d *Device) putPixel(x, y int, z float64, c Color) {
-	if x < 0 || y < 0 || x > d.Width || y > d.Height {
+	if x < 0 || y < 0 || x >= d.Width || y >= d.Height {
 		return
 	}
 
