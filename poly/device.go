@@ -11,17 +11,25 @@ type Device struct {
 
 	camera      Camera
 	colorBuffer *image.NRGBA
+	depthBuffer []float64
 
 	viewMatrix       Matrix4
 	projectionMatrix Matrix4
 }
 
 func NewDevice(width, height int) *Device {
-	return &Device{
+	d := &Device{
 		Width:       width,
 		Height:      height,
 		colorBuffer: image.NewNRGBA(image.Rect(0, 0, width, height)),
+		depthBuffer: make([]float64, width*height),
 	}
+
+	for i := range d.depthBuffer {
+		d.depthBuffer[i] = math.MaxFloat64
+	}
+
+	return d
 }
 
 func (d *Device) ClearColorBuffer(c Color) {
@@ -29,6 +37,12 @@ func (d *Device) ClearColorBuffer(c Color) {
 		for x := 0; x < d.Width; x++ {
 			d.colorBuffer.SetNRGBA(x, y, c.NRGBA())
 		}
+	}
+}
+
+func (d *Device) ClearDepthBuffer(f float64) {
+	for i := range d.depthBuffer {
+		d.depthBuffer[i] = f
 	}
 }
 
@@ -46,6 +60,12 @@ func (d *Device) Perspective(fovy, aspect, near, far float64) {
 }
 
 func (d *Device) PutPixel(x, y int, z float64,  c Color) {
+	index := x + y*d.Width
+	if d.depthBuffer[index] < z {
+		return
+	}
+
+	d.depthBuffer[index] = z
 	d.colorBuffer.Set(x, y, c.NRGBA())
 }
 
