@@ -11,6 +11,7 @@ type Device struct {
 	Height int
 
 	camera      Camera
+	shader      Shader
 	colorBuffer *image.NRGBA
 	depthBuffer []float64
 
@@ -56,6 +57,10 @@ func (d *Device) DepthBuffer() []float64 {
 func (d *Device) SetCamera(c Camera) {
 	d.camera = c
 	d.viewMatrix = LookAt(c.Position, c.Target, c.Up)
+}
+
+func (d *Device) SetShader(s Shader) {
+	d.shader = s
 }
 
 func (d *Device) Perspective(fovy, aspect, near, far float64) {
@@ -127,7 +132,7 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	}
 }
 
-func (d *Device) DrawMesh(mesh *Mesh, c Color) {
+func (d *Device) DrawMesh(mesh *Mesh) {
 	cx, cy := d.Width/2, d.Height/2
 	tm := Translate(mesh.Position)
 	rm := RotateX(mesh.Rotation.X).Mul(RotateY(mesh.Rotation.Y)).Mul(RotateZ(mesh.Rotation.Z))
@@ -138,7 +143,7 @@ func (d *Device) DrawMesh(mesh *Mesh, c Color) {
 
 	scale := float64(d.Width) / 2
 	for i := range mesh.Vertices {
-		mesh.Vertices[i].WorldCoordinates = TransformCoordinate(mesh.Vertices[i].Coordinates, transformMatrix)
+		mesh.Vertices[i] = d.shader.Vertex(mesh.Vertices[i], transformMatrix)
 		mesh.Vertices[i].WorldCoordinates.X = mesh.Vertices[i].WorldCoordinates.X*scale + float64(cx)
 		mesh.Vertices[i].WorldCoordinates.Y = mesh.Vertices[i].WorldCoordinates.Y*scale + float64(cy)
 	}
@@ -147,6 +152,7 @@ func (d *Device) DrawMesh(mesh *Mesh, c Color) {
 		v1 := mesh.Vertices[f.V1].WorldCoordinates
 		v2 := mesh.Vertices[f.V2].WorldCoordinates
 		v3 := mesh.Vertices[f.V3].WorldCoordinates
+		c := d.shader.Fragment(mesh.Vertices[0]) // TODO
 		d.DrawTriangle(v1, v2, v3, c)
 	}
 }

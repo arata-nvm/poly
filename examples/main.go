@@ -20,8 +20,10 @@ func main() {
 
 	d.Perspective(10, float64(size/size), 1, 10)
 
-	d.ClearColorBuffer(BLACK)
 	cl := NewColor(0.5, 1, 0.6, 1)
+	d.SetShader(NewSolidShader(cl))
+
+	d.ClearColorBuffer(BLACK)
 	d.DrawMesh(m, cl)
 
 	Save("out.png", d.Image())
