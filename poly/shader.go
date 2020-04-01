@@ -4,7 +4,7 @@ import . "github.com/arata-nvm/poly/vecmath"
 
 type Shader interface {
 	Vertex(Vertex, Matrix4) Vertex
-	Fragment(Vertex) Color
+	Fragment(Vertex, Vector3) Color
 }
 
 type SolidShader struct {
@@ -20,6 +20,6 @@ func (s *SolidShader) Vertex(v Vertex, m Matrix4) Vertex {
 	return v
 }
 
-func (s *SolidShader) Fragment(v Vertex) Color {
+func (s *SolidShader) Fragment(_ Vertex, _ Vector3) Color {
 	return s.Color
 }
