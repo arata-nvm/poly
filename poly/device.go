@@ -140,9 +140,9 @@ func (d *Device) DrawMesh(mesh *Mesh) {
 	transformMatrix := d.projectionMatrix.Mul(d.viewMatrix).Mul(modelMatrix)
 
 	for _, f := range mesh.Faces {
-		v1 := d.transformVertex(f.V1, transformMatrix).WorldCoordinates
-		v2 := d.transformVertex(f.V2, transformMatrix).WorldCoordinates
-		v3 := d.transformVertex(f.V3, transformMatrix).WorldCoordinates
+		v1 := d.transformVertex(f.V1, transformMatrix).Coordinates
+		v2 := d.transformVertex(f.V2, transformMatrix).Coordinates
+		v3 := d.transformVertex(f.V3, transformMatrix).Coordinates
 		c := d.shader.Fragment(f.V1) // TODO
 		d.DrawTriangle(v1, v2, v3, c)
 	}
@@ -153,8 +153,8 @@ func (d *Device) transformVertex(v Vertex, m Matrix4) Vertex {
 	scale := float64(d.Width) / 2
 
 	v = d.shader.Vertex(v, m)
-	v.WorldCoordinates.X = v.WorldCoordinates.X*scale + float64(cx)
-	v.WorldCoordinates.Y = v.WorldCoordinates.Y*scale + float64(cy)
+	v.Coordinates.X = v.Coordinates.X*scale + float64(cx)
+	v.Coordinates.Y = v.Coordinates.Y*scale + float64(cy)
 
 	return v
 }

@@ -16,7 +16,7 @@ func NewSolidShader(color Color) *SolidShader {
 }
 
 func (s *SolidShader) Vertex(v Vertex, m Matrix4) Vertex {
-	v.WorldCoordinates = TransformCoordinate(v.Coordinates, m)
+	v.Coordinates = TransformCoordinate(v.Coordinates, m)
 	return v
 }
 
