@@ -1,5 +1,5 @@
 package poly
 
 type Face struct {
-	V1, V2, V3 int
+	V1, V2, V3 Vertex
 }

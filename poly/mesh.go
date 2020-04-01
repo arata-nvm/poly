@@ -3,8 +3,7 @@ package poly
 import . "github.com/arata-nvm/poly/vecmath"
 
 type Mesh struct {
-	Vertices []Vertex
-	Faces    []Face
+	Faces []Face
 
 	Position Vector3
 	Rotation Vector3

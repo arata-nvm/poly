@@ -133,28 +133,30 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 }
 
 func (d *Device) DrawMesh(mesh *Mesh) {
-	cx, cy := d.Width/2, d.Height/2
 	tm := Translate(mesh.Position)
 	rm := RotateX(mesh.Rotation.X).Mul(RotateY(mesh.Rotation.Y)).Mul(RotateZ(mesh.Rotation.Z))
 	sm := Scale(mesh.Scale)
 	modelMatrix := tm.Mul(rm).Mul(sm)
-
 	transformMatrix := d.projectionMatrix.Mul(d.viewMatrix).Mul(modelMatrix)
 
-	scale := float64(d.Width) / 2
-	for i := range mesh.Vertices {
-		mesh.Vertices[i] = d.shader.Vertex(mesh.Vertices[i], transformMatrix)
-		mesh.Vertices[i].WorldCoordinates.X = mesh.Vertices[i].WorldCoordinates.X*scale + float64(cx)
-		mesh.Vertices[i].WorldCoordinates.Y = mesh.Vertices[i].WorldCoordinates.Y*scale + float64(cy)
-	}
-
 	for _, f := range mesh.Faces {
-		v1 := mesh.Vertices[f.V1].WorldCoordinates
-		v2 := mesh.Vertices[f.V2].WorldCoordinates
-		v3 := mesh.Vertices[f.V3].WorldCoordinates
-		c := d.shader.Fragment(mesh.Vertices[0]) // TODO
+		v1 := d.transformVertex(f.V1, transformMatrix).WorldCoordinates
+		v2 := d.transformVertex(f.V2, transformMatrix).WorldCoordinates
+		v3 := d.transformVertex(f.V3, transformMatrix).WorldCoordinates
+		c := d.shader.Fragment(f.V1) // TODO
 		d.DrawTriangle(v1, v2, v3, c)
 	}
+}
+
+func (d *Device) transformVertex(v Vertex, m Matrix4) Vertex {
+	cx, cy := d.Width/2, d.Height/2
+	scale := float64(d.Width) / 2
+
+	v = d.shader.Vertex(v, m)
+	v.WorldCoordinates.X = v.WorldCoordinates.X*scale + float64(cx)
+	v.WorldCoordinates.Y = v.WorldCoordinates.Y*scale + float64(cy)
+
+	return v
 }
 
 func (d *Device) DrawWiredTriangle(v1, v2, v3 Vector3, c Color) {
