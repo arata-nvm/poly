@@ -74,6 +74,7 @@ func (d *Device) putPixel(x, y int, z float64, c Color) {
 		return
 	}
 
+	y = d.Height - y - 1
 	index := x + y*d.Width
 	if d.depthBuffer[index] < z {
 		return
