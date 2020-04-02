@@ -69,3 +69,20 @@ func (s *TextureShader) Vertex(v Vertex, m Matrix4) Vertex {
 func (s *TextureShader) Fragment(v Vertex, _ Vector3) Color {
 	return s.Texture.Map(v.Uv.X, v.Uv.Y)
 }
+
+type NormalShader struct{}
+
+func NewNormalShader() *NormalShader {
+	return &NormalShader{}
+}
+
+func (s *NormalShader) Vertex(v Vertex, m Matrix4) Vertex {
+	v.Coordinates = TransformCoordinate(v.Coordinates, m)
+	v.Normal = TransformCoordinate(v.Normal, m).Normalize()
+	return v
+}
+
+func (s *NormalShader) Fragment(v Vertex, _ Vector3) Color {
+	n := v.Normal.Clamp(0, 1)
+	return NewColorFromVec(n)
+}
