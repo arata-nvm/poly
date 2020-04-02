@@ -95,10 +95,10 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 	x2 := int(v2.X)
 	y2 := int(v2.Y)
 
-	dx := abs(x2 - x1)
-	dy := abs(y2 - y1)
-	sx := sign(x2 - x1)
-	sy := sign(y2 - y1)
+	dx := Abs(x2 - x1)
+	dy := Abs(y2 - y1)
+	sx := Sign(x2 - x1)
+	sy := Sign(y2 - y1)
 	err := dx - dy
 
 	gz := 1.0
@@ -116,7 +116,7 @@ func (d *Device) DrawLine(v1, v2 Vector3, c Color) {
 			g = gz * float64(y2-y1)
 		}
 
-		z := interpolate(v1.Z, v2.Z, 1-g)
+		z := Interpolate(v1.Z, v2.Z, 1-g)
 
 		d.putPixel(x1, y1, z, c)
 
@@ -200,18 +200,18 @@ func (d *Device) DrawTriangle(v1, v2, v3 Vector3) {
 
 func (d *Device) scanLine(y int, va, vb, vc, vd Vector3) {
 	g1 := (float64(y) - va.Y) / (vb.Y - va.Y)
-	x1 := int(interpolate(va.X, vb.X, g1))
-	z1 := interpolate(va.Z, vb.Z, g1)
+	x1 := int(Interpolate(va.X, vb.X, g1))
+	z1 := Interpolate(va.Z, vb.Z, g1)
 
 	g2 := (float64(y) - vc.Y) / (vd.Y - vc.Y)
-	x2 := int(interpolate(vc.X, vd.X, g2))
-	z2 := interpolate(vc.Z, vd.Z, g2)
+	x2 := int(Interpolate(vc.X, vd.X, g2))
+	z2 := Interpolate(vc.Z, vd.Z, g2)
 
 	if math.IsNaN(g1) || math.IsNaN(g2) {
 		return
 	}
 
-	xs, xe := min(x1, x2), max(x1, x2)
+	xs, xe := Min(x1, x2), Max(x1, x2)
 
 	v1 := d.cV1.Coordinates
 	v2 := d.cV2.Coordinates
@@ -222,7 +222,7 @@ func (d *Device) scanLine(y int, va, vb, vc, vd Vector3) {
 		if math.IsNaN(g) {
 			g = 0
 		}
-		z := interpolate(z1, z2, g)
+		z := Interpolate(z1, z2, g)
 
 		w1 := ((v2.Y-v3.Y)*(float64(x)-v3.X) + (v3.X-v2.X)*(float64(y)-v3.Y)) / ((v2.Y-v3.Y)*(v1.X-v3.X) + (v3.X-v2.X)*(v1.Y-v3.Y))
 		w2 := ((v3.Y-v1.Y)*(float64(x)-v3.X) + (v1.X-v3.X)*(float64(y)-v3.Y)) / ((v2.Y-v3.Y)*(v1.X-v3.X) + (v3.X-v2.X)*(v1.Y-v3.Y))

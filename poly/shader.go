@@ -46,7 +46,7 @@ func (s *FlatShader) Vertex(v Vertex, m Matrix4) Vertex {
 }
 
 func (s *FlatShader) Fragment(v Vertex, _ Vector3) Color {
-	f := clamp(v.Normal.Dot(s.Light), 0, 1)
+	f := Clamp(v.Normal.Dot(s.Light), 0, 1)
 	return NewColor(s.Color.R*f, s.Color.G*f, s.Color.B*f, s.Color.A)
 }
 

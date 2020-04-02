@@ -1,29 +1,29 @@
-package poly
+package vecmath
 
 import "math"
 
-func abs(n int) int {
+func Abs(n int) int {
 	if n < 0 {
 		return -n
 	}
 	return n
 }
 
-func min(a, b int) int {
+func Min(a, b int) int {
 	if a > b {
 		return b
 	}
 	return a
 }
 
-func max(a, b int) int {
+func Max(a, b int) int {
 	if a > b {
 		return a
 	}
 	return b
 }
 
-func sign(n int) int {
+func Sign(n int) int {
 	if n == 0 {
 		return 0
 	}
@@ -34,10 +34,10 @@ func sign(n int) int {
 	}
 }
 
-func clamp(value, min, max float64) float64 {
+func Clamp(value, min, max float64) float64 {
 	return math.Max(min, math.Min(max, value))
 }
 
-func interpolate(min, max, t float64) float64 {
-	return min + (max-min)*clamp(t, 0, 1)
+func Interpolate(min, max, t float64) float64 {
+	return min + (max-min)*Clamp(t, 0, 1)
 }
