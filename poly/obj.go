@@ -2,7 +2,6 @@ package poly
 
 import (
 	"bufio"
-	"fmt"
 	. "github.com/arata-nvm/poly/vecmath"
 	"io"
 	"os"
@@ -63,8 +62,7 @@ func parseObj(r io.Reader) *Mesh {
 
 			o.Faces = append(o.Faces, Face{v1, v2, v3})
 		default:
-			fmt.Printf("unexpected kind %s\n", cols[0])
-			os.Exit(1)
+			continue
 		}
 	}
 
