@@ -95,3 +95,11 @@ func (v1 Vector3) Normalize() Vector3 {
 func (v1 Vector3) Negate() Vector3 {
 	return Vector3{-v1.X, -v1.Y, -v1.Z}
 }
+
+func (v1 Vector3) Clamp(min, max float64) Vector3 {
+	return Vector3{
+		Clamp(v1.X, min, max),
+		Clamp(v1.Y, min, max),
+		Clamp(v1.Z, min, max),
+	}
+}
