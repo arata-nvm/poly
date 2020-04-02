@@ -1,6 +1,7 @@
 package poly
 
 import (
+	. "github.com/arata-nvm/poly/vecmath"
 	"image/color"
 )
 
@@ -15,6 +16,10 @@ var (
 
 func NewColor(r, g, b, a float64) Color {
 	return Color{r, g, b, a}
+}
+
+func NewColorFromVec(v Vector3) Color {
+	return NewColor(v.X, v.Y, v.Z, 1)
 }
 
 func (c Color) NRGBA() color.NRGBA {
