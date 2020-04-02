@@ -60,7 +60,7 @@ func parseObj(r io.Reader) *Mesh {
 				Normal:      normals[col3[2]],
 			}
 
-			o.Faces = append(o.Faces, Face{v1, v2, v3})
+			o.Faces = append(o.Faces, &Face{v1, v2, v3})
 		default:
 			continue
 		}
