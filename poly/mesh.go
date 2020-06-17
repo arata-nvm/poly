@@ -37,3 +37,9 @@ func (m *Mesh) SmoothNormals() {
 		f.V3.Normal = normals[f.V3.Coordinates]
 	}
 }
+
+func (m *Mesh) CalcNormal() {
+	for i := range m.Faces {
+		m.Faces[i].CalcNormal()
+	}
+}
