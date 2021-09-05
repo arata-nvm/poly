@@ -1,9 +1,10 @@
 package poly
 
 import (
-	. "github.com/arata-nvm/poly/vecmath"
 	"image"
 	"math"
+
+	. "github.com/arata-nvm/poly/vecmath"
 )
 
 type Device struct {
@@ -85,7 +86,7 @@ func (d *Device) putPixel(x, y int, z float64, c Color) {
 }
 
 func (d *Device) DrawPoint(v Vector3, c Color) {
-	d.putPixel(int(v.X), int(v.Y), v.Y, c)
+	d.putPixel(int(v.X), int(v.Y), v.Z, c)
 }
 
 // TODO v1 > v2
