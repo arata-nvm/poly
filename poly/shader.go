@@ -1,8 +1,9 @@
 package poly
 
 import (
-	. "github.com/arata-nvm/poly/vecmath"
 	"math"
+
+	. "github.com/arata-nvm/poly/vecmath"
 )
 
 type Shader interface {
@@ -111,14 +112,18 @@ func (s *PhongShader) Vertex(v Vertex, m Matrix4) Vertex {
 }
 
 func (s *PhongShader) Fragment(v Vertex, _ Vector3) Color {
-	half := s.Light.Add(s.Eye).Normalize()
+	ambientColor := NewColor(0.2, 0.2, 0.2, 1)
+	diffuseColor := NewColor(0.8, 0.8, 0.8, 1)
+	specularColor := NewColor(1, 1, 1, 1)
+
+	c := ambientColor
 	diffuse := Clamp(v.Normal.Dot(s.Light), 0, 1)
-	specular := math.Pow(Clamp(v.Normal.Dot(half), 0, 1), s.Pow)
-	ambient := 0.05
-	return NewColor(
-		Clamp(s.Color.R*diffuse+specular+ambient, 0, 1),
-		Clamp(s.Color.G*diffuse+specular+ambient, 0, 1),
-		Clamp(s.Color.B*diffuse+specular+ambient, 0, 1),
-		s.Color.A,
-	)
+	c = c.Add(diffuseColor.MulScalar(diffuse))
+	if diffuse > 0 {
+		reflected := s.Light.Negate().Reflected(v.Normal)
+		specular := math.Pow(Clamp(s.Eye.Dot(reflected), 0, 1), s.Pow)
+		c = c.Add(specularColor.MulScalar(specular))
+	}
+
+	return s.Color.Mul(c).Min(WHITE)
 }

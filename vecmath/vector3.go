@@ -103,3 +103,7 @@ func (v1 Vector3) Clamp(min, max float64) Vector3 {
 		Clamp(v1.Z, min, max),
 	}
 }
+
+func (v Vector3) Reflected(n Vector3) Vector3 {
+	return n.MulScalar(2 * v.Dot(n)).Sub(v).Normalize()
+}
